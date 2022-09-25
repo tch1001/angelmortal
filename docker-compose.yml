@@ -1,0 +1,19 @@
+networks:
+  internal:
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - internal
+    volumes: 
+      - './redis:/data'
+      - './redis-config:/usr/local/etc/redis'
+    entrypoint: redis-server
+    command: /usr/local/etc/redis/redis.conf
+  redis-cli:
+    image: redis:latest
+    networks:
+      - internal
+    entrypoint: sleep infinity

@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "angelmortal"
+version = "0.1.0"
+description = ""
+authors = ["tch1001 <tanchienhao@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+redis = "^4.3.4"
+python-telegram-bot = "^13.14"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
