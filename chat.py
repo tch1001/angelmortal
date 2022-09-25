@@ -10,7 +10,7 @@ from threading import Thread
 
 import redis
 
-client = redis.Redis()
+client = redis.Redis(decode_responses=True)
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -54,9 +54,9 @@ class Duplex():
             client.set(f'{self.LR_queue_name}_status', "ready")
     def get_ready(self):
         if(self.reverse): # primary is right
-            return client.get(f'{self.RL_queue_name}_status') == b'ready'
+            return client.get(f'{self.RL_queue_name}_status') is not None
         else:
-            return client.get(f'{self.LR_queue_name}_status') == b'ready'
+            return client.get(f'{self.LR_queue_name}_status') is not None
 
 class User():
     def __init__(self, username: str):
@@ -69,9 +69,7 @@ class User():
         self.duplex.set_ready()
 
     def user_ready(self):
-        if(not self.duplex.get_ready()):
-            return False
-        return True
+        return self.duplex.get_ready()
 
     def check_messages(self, update : Update = None):
         msg = self.duplex.recv()
@@ -199,16 +197,20 @@ def mortal_start(update: Update, context) -> None:
     angels[username].convo = update
 
 def angel_message_handler(update: Update, context):
-    if(not check_angel_online_status(update, quiet = True)):
+    if(not check_angel_online_status(update, quiet = False)):
         return
     user = update.message.from_user.username
     mortals[user].send_message(update.message.text)
 
 def mortal_message_handler(update: Update, context):
-    if(not check_mortal_online_status(update, quiet = True)):
+    if(not check_mortal_online_status(update, quiet = False)):
         return
     user = update.message.from_user.username
     angels[user].send_message(update.message.text)
+
+def angel_check(update: Update, context):
+    user = update.message.from_user.username
+    mortals[user].check_messages(update)
 
 def mortal_check(update: Update, context):
     user = update.message.from_user.username
@@ -218,8 +220,8 @@ def angel_start_bot():
     angel_updater = Updater(os.environ.get('ANGEL_API_KEY'))
     angel_dispatcher = angel_updater.dispatcher
     angel_dispatcher.add_handler(CommandHandler('start', angel_start))
+    angel_dispatcher.add_handler(CommandHandler('check', angel_check))
     angel_dispatcher.add_handler(MessageHandler(Filters.text, angel_message_handler))
-    # angel_dispatcher.add
     angel_updater.start_polling()
     angel_updater.idle()
     for a in angels:
