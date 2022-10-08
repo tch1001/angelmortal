@@ -18,7 +18,7 @@ with open(filename, 'r') as f:
                 h = header.lower()
                 if(h == 'name'):
                     name_idx = idx
-                elif('telegram' in h):
+                elif('telegram handle' in h):
                     tele_handle_idx = idx
                 idx += 1
         else:

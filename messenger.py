@@ -72,9 +72,7 @@ Locker Floor: {(rows[pair_tele][locker_floor_idx] if locker_floor_idx != -1 else
 Locker No.: {(rows[pair_tele][locker_number_idx] if locker_number_idx != -1 else "nil")}
 Gift preferences: {(rows[pair_tele][gift_idx] if gift_idx != -1 else "nil")}
 
-You may start chatting with them!
-Angel Proxy Chat: @dent_anm_angel_bot
-Mortal Proxy Chat: @dent_anm_mortal_bot
+Do create your own group and start chatting with them!
 """
     update.message.reply_text(msg)
     return
