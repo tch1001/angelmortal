@@ -53,33 +53,49 @@ with open(pairs_filename, 'r') as f:
             exit()
         pairs[row[0]] = row[1]
 
-def start(update: Update, context: CallbackContext) -> None:
-    username = update.message.from_user.username
-    logging.log(logging.DEBUG, pairs)
-    if(username not in pairs):
-        msg = "your username wasn't in the system! if this is a mistake, please contact @xjinghan or the in-charge"
+def reply(update, username = None):
+    try:
+        if(username is None):
+            username = update.message.from_user.username
+        logging.log(logging.DEBUG, pairs)
+        if(username not in pairs):
+            msg = "your username wasn't in the system! if this is a mistake, please contact @xjinghan or the in-charge"
+            update.message.reply_text(msg)
+            return
+        pair_tele= pairs[username]
+        msg = f"""
+    Hello {username}! 
+    
+    Thanks for signing up for Angel & Mortal'22!! Here are some information abt your mortal HAVE FUN 🥳🥳🥳
+    
+    Name: {(rows[pair_tele][name_idx] if name_idx != -1 else "nil")}
+    Tele Handle: @{pair_tele}
+    Locker Floor: {(rows[pair_tele][locker_floor_idx] if locker_floor_idx != -1 else "nil")} 
+    Locker No.: {(rows[pair_tele][locker_number_idx] if locker_number_idx != -1 else "nil")}
+    Gift preferences: {(rows[pair_tele][gift_idx] if gift_idx != -1 else "nil")}
+    
+    Do create your own group and start chatting with them!
+    """
         update.message.reply_text(msg)
         return
-    pair_tele= pairs[username]
-    msg = f"""
-Hello {username}! 
+    except Exception as e:
+        update.message.reply_text('something went wrong, pls contact @xjinghan with a screenshot of this error msg')
+        update.message.reply_text(str(e))
+        return
 
-Thanks for signing up for Angel & Mortal'22!! Here are some information abt your mortal HAVE FUN 🥳🥳🥳
+def test(update: Update, context: CallbackContext) -> None:
+    usr = update.message.from_user.username 
+    if(usr in ['tch1001','xjinghan']):
+        reply(update, context.args[0])
+    
+def start(update: Update, context: CallbackContext) -> None:
+    reply(update)
 
-Name: {(rows[pair_tele][name_idx] if name_idx != -1 else "nil")}
-Tele Handle: @{pair_tele}
-Locker Floor: {(rows[pair_tele][locker_floor_idx] if locker_floor_idx != -1 else "nil")} 
-Locker No.: {(rows[pair_tele][locker_number_idx] if locker_number_idx != -1 else "nil")}
-Gift preferences: {(rows[pair_tele][gift_idx] if gift_idx != -1 else "nil")}
-
-Do create your own group and start chatting with them!
-"""
-    update.message.reply_text(msg)
-    return
 def main():
     updater = Updater(os.environ.get('API_KEY'))
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start',start))
+    dispatcher.add_handler(CommandHandler('test',test, pass_args=True))
     updater.start_polling()
     updater.idle()
 
