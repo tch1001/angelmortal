@@ -31,7 +31,7 @@ with open(form_filename, 'r') as f:
                 print(h)
                 if(h == 'name'):
                     name_idx = idx
-                elif('telegram' in h):
+                elif('telegram handle' in h):
                     tele_handle_idx = idx
                 elif('like' in h):
                     gift_idx = idx
