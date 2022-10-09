@@ -41,7 +41,7 @@ with open(form_filename, 'r') as f:
                     locker_number_idx = idx
                 idx += 1
         else:
-            rows[row[tele_handle_idx].replace('@', '')] = row
+            rows[row[tele_handle_idx].replace('@', '').replace(' ', '')] = row
 
 pairs_filename = f'paired_{form_filename}'
 pairs = {}
